@@ -112,5 +112,49 @@ rules:
     examples:
       match:
         - "no reply yet"
+        - "no\vreply yet"
       no_match:
         - "noreply@example.org"
+
+# Every language must refuse or accept each of these alike (docs/SPEC.md, section 2).
+portability:
+  refused:
+    - '(?=a)'
+    - '(?<!a)b'
+    - '(a)\1'
+    - '(?<name>a)'
+    - '(?P<name>a)'
+    - '(?i)a'
+    - 'a$'
+    - '\p{L}'
+    - 'a++'
+    - 'a{2}+'
+    - 'a{,3}'
+    - 'x{'
+    - '[[a]]'
+    - '[a&&b]'
+    - '[a--b]'
+    - '[a~~b]'
+    - '[]a]'
+    - '\x41'
+    - '\Aa'
+    - '\v'
+    - '\Q.\E'
+    - 'café'
+    - '[\b]'
+    - 'a{1001}'
+    - 'a{2,5000}'
+    - '[abc'
+    - 'a\'
+  accepted:
+    - '\bcolou?r\b'
+    - 'a{2,3}'
+    - 'a{2}'
+    - 'a{1000}'
+    - '[a-z\]]'
+    - '\(\?='
+    - '(?:ab)+?'
+    - '\d+\.\d*'
+    - '[^.!?]{0,30}'
+    - '\$5'
+    - '^\s*note\b'

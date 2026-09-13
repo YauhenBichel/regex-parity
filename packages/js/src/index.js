@@ -18,7 +18,8 @@ const APOSTROPHES = new Set([0x2018, 0x2019, 0x201a, 0x201b, 0x02bc, 0x2032]);
 const QUOTES = new Set([0x201c, 0x201d, 0x201e, 0x201f]);
 // Line breaks engines disagree about for "." and \s. All of them become "\n".
 const LINE_BREAKS = new Set([0x000d, 0x0085, 0x2028, 0x2029]);
-const OGHAM_SPACE_MARK = 0x1680;
+// Spaces some engines' \s does not match: Go's \s leaves out the vertical tab.
+const ODD_SPACES = new Set([0x000b, 0x1680]);
 
 function foldCodePoint(codePoint) {
   if (INVISIBLE.has(codePoint)) return "";
@@ -26,7 +27,7 @@ function foldCodePoint(codePoint) {
   if (APOSTROPHES.has(codePoint)) return "'";
   if (QUOTES.has(codePoint)) return '"';
   if (LINE_BREAKS.has(codePoint)) return "\n";
-  if (codePoint === OGHAM_SPACE_MARK) return " ";
+  if (ODD_SPACES.has(codePoint)) return " ";
   return String.fromCodePoint(codePoint);
 }
 
@@ -62,7 +63,8 @@ function originalRange(folded, start, end) {
 }
 
 const LETTER_ESCAPES = "bBdDsSwWtnrf";
-const QUANTIFIER = /^\{\d+(?:,\d*)?\}/;
+const QUANTIFIER = /^\{(\d+)(?:,(\d*))?\}/;
+const MAX_REPEAT = 1000; // RE2 and Go refuse more
 
 /** Why a pattern is not portable, or an empty list. The same checks run in every language. */
 export function checkPattern(source) {
@@ -97,6 +99,7 @@ export function checkPattern(source) {
     if (inClass) {
       if (c === "[") add("'[' inside a character class is not portable: Java reads it as a nested class");
       else if (c === "&" && source[i + 1] === "&") add("'&&' inside a character class is not portable");
+      else if ((c === "-" || c === "~") && source[i + 1] === c) add("'--' and '~~' inside a character class are not portable: Rust reads them as set operations");
       else if (c === "]") inClass = false;
       i += 1;
       continue;
@@ -121,6 +124,7 @@ export function checkPattern(source) {
       if (!quantifier) {
         add("a '{' that is not a {n}, {n,} or {n,m} quantifier is not portable; write \\{");
       } else {
+        if (Number(quantifier[1]) > MAX_REPEAT || Number(quantifier[2] || 0) > MAX_REPEAT) add("a repetition count above 1000 is not portable: RE2 and Go refuse it");
         i += quantifier[0].length;
         if (source[i] === "+") add("possessive quantifiers are not portable");
         continue;
