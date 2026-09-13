@@ -1,8 +1,14 @@
-# 0001: ruleproof design
+# 0001: regex-parity design
 
 Status: accepted as the starting design, 13 September 2026. No library code exists yet.
 
-ruleproof compiles a pack of regular-expression rules, written once as data with examples, into
+In short: the same regular expression gives different answers in JavaScript, Python and Java as
+soon as text is not plain ASCII, and tests rarely notice, because test examples are ASCII.
+regex-parity normalises text identically in every language, pins every engine to the same ASCII
+matching behaviour, and multiplies each test example into look-alike variants that every language
+must answer the same way.
+
+regex-parity compiles a pack of regular-expression rules, written once as data with examples, into
 code for several languages, and proves that every language reaches the same verdict.
 
 ## 1. The problem
@@ -83,16 +89,16 @@ The price: under ASCII semantics an accented letter is not a word character, so 
 inside "café". Right for English rules, wrong for Belarusian or French ones. That is why the
 semantics are a named, versioned profile.
 
-## 3. What ruleproof is, and is not
+## 3. What regex-parity is, and is not
 
-ruleproof is the toolchain around a rule pack. It owns the rule core and its validation; extension
+regex-parity is the toolchain around a rule pack. It owns the rule core and its validation; extension
 fields, declared by each product in a JSON Schema fragment; the intermediate representation;
 pattern portability, checked by compiling; the matching profile and the cases generated from it;
 one conformance protocol and its runner; code generators, as plug-ins; generated rule
 documentation; and the drift check.
 
 It is not an engine. Verdicts, severities, remediation, routing and rate windows stay in each
-product, and products do not depend on ruleproof at run time. It does not replace gitleaks (secret
+product, and products do not depend on regex-parity at run time. It does not replace gitleaks (secret
 scanning), Vale (prose style) or Guardrails AI (runtime validators).
 
 ## 4. Authoring format
@@ -123,7 +129,7 @@ A conformance case is `{caseId, ruleId, input, context, fires, origin}`, where `
 
 ## 6. Portability and the matching profile
 
-**Syntax.** `ruleproof check` compiles every pattern, `unless` and `except` with RE2 (re2js: pure
+**Syntax.** `regex-parity check` compiles every pattern, `unless` and `except` with RE2 (re2js: pure
 JavaScript, no native build) and with the JavaScript engine. Failing either fails the check.
 
 **Semantics.** Profile `portable-1`, the default:
@@ -136,7 +142,7 @@ JavaScript, no native build) and with the JavaScript engine. Failing either fail
 | Whitespace in the sentence function | ASCII: space, `\t`, `\n`, `\v`, `\f`, `\r` |
 | Offsets | findings and edits refer to the original text, through a map kept while folding |
 
-**Generated cases.** From every fixture, ruleproof derives variants that must get the fixture's
+**Generated cases.** From every fixture, regex-parity derives variants that must get the fixture's
 answer: long s, Kelvin sign, full-width forms, zero-width spaces inside words, no-break spaces, and
 en dashes for hyphens.
 
@@ -151,7 +157,7 @@ stderr   passed through
 ```
 
 `context` is a string whose meaning the product declares, empty when unused.
-`ruleproof conform -- <command…>` runs fixture and profile cases and reports each failure by rule,
+`regex-parity conform -- <command…>` runs fixture and profile cases and reports each failure by rule,
 origin and input.
 
 ## 8. Generators
@@ -164,10 +170,10 @@ fold function and flags. `java` follows in 0.2. A product may keep private gener
 
 | Command | Does |
 |---|---|
-| `ruleproof build` | validate, normalise, run the generators, write files |
-| `ruleproof check` | schema and extension fragment, RE2 and JS compilation, profile rules |
-| `ruleproof conform -- <command…>` | fixture and profile cases against any implementation |
-| `ruleproof drift` | rebuild in memory; fail if committed generated files differ |
+| `regex-parity build` | validate, normalise, run the generators, write files |
+| `regex-parity check` | schema and extension fragment, RE2 and JS compilation, profile rules |
+| `regex-parity conform -- <command…>` | fixture and profile cases against any implementation |
+| `regex-parity drift` | rebuild in memory; fail if committed generated files differ |
 
 An npm package for Node 20 or later, with `yaml` and `re2js` as its dependencies.
 
