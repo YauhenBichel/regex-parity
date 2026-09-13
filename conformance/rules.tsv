@@ -1,0 +1,12 @@
+# rule	case	role	pattern (backslashes and non-ASCII as backslash-u escapes)
+C01-words	insensitive	pattern	\u005cbdefinitely\u005cs+harmless\u005cb
+C02-digits	insensitive	pattern	\u005cborder\u005cs+#?\u005cd{6}\u005cb
+C03-apostrophes	insensitive	pattern	\u005cb(?:it|that)'s\u005cs+safe\u005cs+to\u005cs+ignore\u005cb
+C04-unless	insensitive	pattern	\u005cbready\u005cs+by\u005cs+(?:monday|friday|tomorrow)\u005cb
+C04-unless	insensitive	unless	\u005cbif\u005cb
+C05-case	sensitive	pattern	\u005cbTODO\u005cb
+C06-line-breaks	insensitive	pattern	\u005cbred.blue\u005cb
+C07-accents	insensitive	pattern	\u005cbcaf\u005cb
+C08-dotless-i	insensitive	pattern	\u005cbthis\u005cb
+C09-hyphens	insensitive	pattern	\u005cbe-mail\u005cb
+C10-spaces	insensitive	pattern	\u005cbno\u005cs+reply\u005cb

@@ -1,0 +1,35 @@
+{
+  "name": "regex-parity",
+  "version": "0.1.0",
+  "description": "One set of regular-expression rules, the same answer in JavaScript, Python and Java, even on text with accents, look-alike or invisible characters.",
+  "keywords": ["regex", "unicode", "normalization", "nfkc", "cross-language", "guardrails", "content-moderation", "pii"],
+  "license": "Apache-2.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    }
+  },
+  "types": "./src/index.d.ts",
+  "bin": {
+    "regex-parity": "./src/cli.js"
+  },
+  "files": ["src", "README.md"],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test test/index.test.js"
+  },
+  "dependencies": {
+    "re2js": "2.8.6",
+    "yaml": "2.9.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YauhenBichel/regex-parity.git",
+    "directory": "packages/js"
+  },
+  "homepage": "https://github.com/YauhenBichel/regex-parity#readme"
+}

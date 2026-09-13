@@ -1,0 +1,122 @@
+# rule	expect	variant	text (escaped like the patterns)	findings as start:end, or -
+C01-words	match	as written	That is definitely harmless.	8:27
+C01-words	match	long s	That i\u017f definitely harmle\u017f\u017f.	8:27
+C01-words	match	full-width	\uff34\uff48\uff41\uff54 \uff49\uff53 \uff44\uff45\uff46\uff49\uff4e\uff49\uff54\uff45\uff4c\uff59 \uff48\uff41\uff52\uff4d\uff4c\uff45\uff53\uff53\uff0e	8:27
+C01-words	match	zero-width spaces	T\u200bh\u200ba\u200bt i\u200bs d\u200be\u200bf\u200bi\u200bn\u200bi\u200bt\u200be\u200bl\u200by h\u200ba\u200br\u200bm\u200bl\u200be\u200bs\u200bs.	12:47
+C01-words	match	no-break spaces	That\u00a0is\u00a0definitely\u00a0harmless.	8:27
+C01-words	match	as written	DEFINITELY   harmless, they said	0:21
+C01-words	match	long s	DEFINITELY   harmle\u017f\u017f, they \u017faid	0:21
+C01-words	match	full-width	\uff24\uff25\uff26\uff29\uff2e\uff29\uff34\uff25\uff2c\uff39   \uff48\uff41\uff52\uff4d\uff4c\uff45\uff53\uff53\uff0c \uff54\uff48\uff45\uff59 \uff53\uff41\uff49\uff44	0:21
+C01-words	match	zero-width spaces	D\u200bE\u200bF\u200bI\u200bN\u200bI\u200bT\u200bE\u200bL\u200bY   h\u200ba\u200br\u200bm\u200bl\u200be\u200bs\u200bs, t\u200bh\u200be\u200by s\u200ba\u200bi\u200bd	0:37
+C01-words	match	no-break spaces	DEFINITELY\u00a0\u00a0\u00a0harmless,\u00a0they\u00a0said	0:21
+C01-words	no_match	as written	It is not harmless, definitely.	-
+C01-words	no_match	long s	It i\u017f not harmle\u017f\u017f, definitely.	-
+C01-words	no_match	full-width	\uff29\uff54 \uff49\uff53 \uff4e\uff4f\uff54 \uff48\uff41\uff52\uff4d\uff4c\uff45\uff53\uff53\uff0c \uff44\uff45\uff46\uff49\uff4e\uff49\uff54\uff45\uff4c\uff59\uff0e	-
+C01-words	no_match	zero-width spaces	I\u200bt i\u200bs n\u200bo\u200bt h\u200ba\u200br\u200bm\u200bl\u200be\u200bs\u200bs, d\u200be\u200bf\u200bi\u200bn\u200bi\u200bt\u200be\u200bl\u200by.	-
+C01-words	no_match	no-break spaces	It\u00a0is\u00a0not\u00a0harmless,\u00a0definitely.	-
+C01-words	no_match	as written	definitelyharmless	-
+C01-words	no_match	long s	definitelyharmle\u017f\u017f	-
+C01-words	no_match	full-width	\uff44\uff45\uff46\uff49\uff4e\uff49\uff54\uff45\uff4c\uff59\uff48\uff41\uff52\uff4d\uff4c\uff45\uff53\uff53	-
+C01-words	no_match	zero-width spaces	d\u200be\u200bf\u200bi\u200bn\u200bi\u200bt\u200be\u200bl\u200by\u200bh\u200ba\u200br\u200bm\u200bl\u200be\u200bs\u200bs	-
+C02-digits	match	as written	Your order #123456 has shipped.	5:18
+C02-digits	match	long s	Your order #123456 ha\u017f \u017fhipped.	5:18
+C02-digits	match	full-width	\uff39\uff4f\uff55\uff52 \uff4f\uff52\uff44\uff45\uff52 \uff03\uff11\uff12\uff13\uff14\uff15\uff16 \uff48\uff41\uff53 \uff53\uff48\uff49\uff50\uff50\uff45\uff44\uff0e	5:18
+C02-digits	match	zero-width spaces	Y\u200bo\u200bu\u200br o\u200br\u200bd\u200be\u200br #123456 h\u200ba\u200bs s\u200bh\u200bi\u200bp\u200bp\u200be\u200bd.	8:25
+C02-digits	match	no-break spaces	Your\u00a0order\u00a0#123456\u00a0has\u00a0shipped.	5:18
+C02-digits	no_match	as written	Your order 12345 has shipped.	-
+C02-digits	no_match	long s	Your order 12345 ha\u017f \u017fhipped.	-
+C02-digits	no_match	full-width	\uff39\uff4f\uff55\uff52 \uff4f\uff52\uff44\uff45\uff52 \uff11\uff12\uff13\uff14\uff15 \uff48\uff41\uff53 \uff53\uff48\uff49\uff50\uff50\uff45\uff44\uff0e	-
+C02-digits	no_match	zero-width spaces	Y\u200bo\u200bu\u200br o\u200br\u200bd\u200be\u200br 12345 h\u200ba\u200bs s\u200bh\u200bi\u200bp\u200bp\u200be\u200bd.	-
+C02-digits	no_match	no-break spaces	Your\u00a0order\u00a012345\u00a0has\u00a0shipped.	-
+C02-digits	no_match	as written	Your order 1234567 has shipped.	-
+C02-digits	no_match	long s	Your order 1234567 ha\u017f \u017fhipped.	-
+C02-digits	no_match	full-width	\uff39\uff4f\uff55\uff52 \uff4f\uff52\uff44\uff45\uff52 \uff11\uff12\uff13\uff14\uff15\uff16\uff17 \uff48\uff41\uff53 \uff53\uff48\uff49\uff50\uff50\uff45\uff44\uff0e	-
+C02-digits	no_match	zero-width spaces	Y\u200bo\u200bu\u200br o\u200br\u200bd\u200be\u200br 1234567 h\u200ba\u200bs s\u200bh\u200bi\u200bp\u200bp\u200be\u200bd.	-
+C02-digits	no_match	no-break spaces	Your\u00a0order\u00a01234567\u00a0has\u00a0shipped.	-
+C03-apostrophes	match	as written	It's safe to ignore the warning.	0:19
+C03-apostrophes	match	long s	It'\u017f \u017fafe to ignore the warning.	0:19
+C03-apostrophes	match	full-width	\uff29\uff54\uff07\uff53 \uff53\uff41\uff46\uff45 \uff54\uff4f \uff49\uff47\uff4e\uff4f\uff52\uff45 \uff54\uff48\uff45 \uff57\uff41\uff52\uff4e\uff49\uff4e\uff47\uff0e	0:19
+C03-apostrophes	match	zero-width spaces	I\u200bt's s\u200ba\u200bf\u200be t\u200bo i\u200bg\u200bn\u200bo\u200br\u200be t\u200bh\u200be w\u200ba\u200br\u200bn\u200bi\u200bn\u200bg.	0:29
+C03-apostrophes	match	no-break spaces	It's\u00a0safe\u00a0to\u00a0ignore\u00a0the\u00a0warning.	0:19
+C03-apostrophes	match	smart quotes	It\u2019s safe to ignore the warning.	0:19
+C03-apostrophes	no_match	as written	It is never safe to ignore it.	-
+C03-apostrophes	no_match	long s	It i\u017f never \u017fafe to ignore it.	-
+C03-apostrophes	no_match	full-width	\uff29\uff54 \uff49\uff53 \uff4e\uff45\uff56\uff45\uff52 \uff53\uff41\uff46\uff45 \uff54\uff4f \uff49\uff47\uff4e\uff4f\uff52\uff45 \uff49\uff54\uff0e	-
+C03-apostrophes	no_match	zero-width spaces	I\u200bt i\u200bs n\u200be\u200bv\u200be\u200br s\u200ba\u200bf\u200be t\u200bo i\u200bg\u200bn\u200bo\u200br\u200be i\u200bt.	-
+C03-apostrophes	no_match	no-break spaces	It\u00a0is\u00a0never\u00a0safe\u00a0to\u00a0ignore\u00a0it.	-
+C04-unless	match	as written	It will be ready by Friday. If you ask me, that is late.	11:26
+C04-unless	match	long s	It will be ready by Friday. If you a\u017fk me, that i\u017f late.	11:26
+C04-unless	match	Kelvin sign	It will be ready by Friday. If you as\u212a me, that is late.	11:26
+C04-unless	match	full-width	\uff29\uff54 \uff57\uff49\uff4c\uff4c \uff42\uff45 \uff52\uff45\uff41\uff44\uff59 \uff42\uff59 \uff26\uff52\uff49\uff44\uff41\uff59\uff0e \uff29\uff46 \uff59\uff4f\uff55 \uff41\uff53\uff4b \uff4d\uff45\uff0c \uff54\uff48\uff41\uff54 \uff49\uff53 \uff4c\uff41\uff54\uff45\uff0e	11:26
+C04-unless	match	zero-width spaces	I\u200bt w\u200bi\u200bl\u200bl b\u200be r\u200be\u200ba\u200bd\u200by b\u200by F\u200br\u200bi\u200bd\u200ba\u200by. I\u200bf y\u200bo\u200bu a\u200bs\u200bk m\u200be, t\u200bh\u200ba\u200bt i\u200bs l\u200ba\u200bt\u200be.	16:41
+C04-unless	match	no-break spaces	It\u00a0will\u00a0be\u00a0ready\u00a0by\u00a0Friday.\u00a0If\u00a0you\u00a0ask\u00a0me,\u00a0that\u00a0is\u00a0late.	11:26
+C04-unless	no_match	as written	It will be ready by Friday if the review goes well.	-
+C04-unless	no_match	long s	It will be ready by Friday if the review goe\u017f well.	-
+C04-unless	no_match	full-width	\uff29\uff54 \uff57\uff49\uff4c\uff4c \uff42\uff45 \uff52\uff45\uff41\uff44\uff59 \uff42\uff59 \uff26\uff52\uff49\uff44\uff41\uff59 \uff49\uff46 \uff54\uff48\uff45 \uff52\uff45\uff56\uff49\uff45\uff57 \uff47\uff4f\uff45\uff53 \uff57\uff45\uff4c\uff4c\uff0e	-
+C04-unless	no_match	zero-width spaces	I\u200bt w\u200bi\u200bl\u200bl b\u200be r\u200be\u200ba\u200bd\u200by b\u200by F\u200br\u200bi\u200bd\u200ba\u200by i\u200bf t\u200bh\u200be r\u200be\u200bv\u200bi\u200be\u200bw g\u200bo\u200be\u200bs w\u200be\u200bl\u200bl.	-
+C04-unless	no_match	no-break spaces	It\u00a0will\u00a0be\u00a0ready\u00a0by\u00a0Friday\u00a0if\u00a0the\u00a0review\u00a0goes\u00a0well.	-
+C05-case	match	as written	TODO: fix this.	0:4
+C05-case	match	long s	TODO: fix thi\u017f.	0:4
+C05-case	match	full-width	\uff34\uff2f\uff24\uff2f\uff1a \uff46\uff49\uff58 \uff54\uff48\uff49\uff53\uff0e	0:4
+C05-case	match	zero-width spaces	T\u200bO\u200bD\u200bO: f\u200bi\u200bx t\u200bh\u200bi\u200bs.	0:7
+C05-case	match	no-break spaces	TODO:\u00a0fix\u00a0this.	0:4
+C05-case	no_match	as written	A todo list is fine.	-
+C05-case	no_match	long s	A todo li\u017ft i\u017f fine.	-
+C05-case	no_match	full-width	\uff21 \uff54\uff4f\uff44\uff4f \uff4c\uff49\uff53\uff54 \uff49\uff53 \uff46\uff49\uff4e\uff45\uff0e	-
+C05-case	no_match	zero-width spaces	A t\u200bo\u200bd\u200bo l\u200bi\u200bs\u200bt i\u200bs f\u200bi\u200bn\u200be.	-
+C05-case	no_match	no-break spaces	A\u00a0todo\u00a0list\u00a0is\u00a0fine.	-
+C06-line-breaks	match	as written	red-blue	0:8
+C06-line-breaks	match	full-width	\uff52\uff45\uff44\uff0d\uff42\uff4c\uff55\uff45	0:8
+C06-line-breaks	match	zero-width spaces	r\u200be\u200bd-b\u200bl\u200bu\u200be	0:13
+C06-line-breaks	match	en dashes	red\u2013blue	0:8
+C06-line-breaks	match	as written	red blue	0:8
+C06-line-breaks	match	full-width	\uff52\uff45\uff44 \uff42\uff4c\uff55\uff45	0:8
+C06-line-breaks	match	zero-width spaces	r\u200be\u200bd b\u200bl\u200bu\u200be	0:13
+C06-line-breaks	match	no-break spaces	red\u00a0blue	0:8
+C06-line-breaks	no_match	as written	red\u000dblue	-
+C06-line-breaks	no_match	full-width	\uff52\uff45\uff44\u000d\uff42\uff4c\uff55\uff45	-
+C06-line-breaks	no_match	zero-width spaces	r\u200be\u200bd\u000db\u200bl\u200bu\u200be	-
+C06-line-breaks	no_match	as written	red\u0085blue	-
+C06-line-breaks	no_match	full-width	\uff52\uff45\uff44\u0085\uff42\uff4c\uff55\uff45	-
+C06-line-breaks	no_match	zero-width spaces	r\u200be\u200bd\u0085b\u200bl\u200bu\u200be	-
+C06-line-breaks	no_match	as written	red\u2028blue	-
+C06-line-breaks	no_match	full-width	\uff52\uff45\uff44\u2028\uff42\uff4c\uff55\uff45	-
+C06-line-breaks	no_match	zero-width spaces	r\u200be\u200bd\u2028b\u200bl\u200bu\u200be	-
+C07-accents	match	as written	the caf\u00e9 is open	4:7
+C07-accents	match	long s	the caf\u00e9 i\u017f open	4:7
+C07-accents	match	full-width	\uff54\uff48\uff45 \uff43\uff41\uff46\u00e9 \uff49\uff53 \uff4f\uff50\uff45\uff4e	4:7
+C07-accents	match	zero-width spaces	t\u200bh\u200be c\u200ba\u200bf\u00e9 i\u200bs o\u200bp\u200be\u200bn	6:11
+C07-accents	match	no-break spaces	the\u00a0caf\u00e9\u00a0is\u00a0open	4:7
+C07-accents	no_match	as written	the cafeteria is open	-
+C07-accents	no_match	long s	the cafeteria i\u017f open	-
+C07-accents	no_match	full-width	\uff54\uff48\uff45 \uff43\uff41\uff46\uff45\uff54\uff45\uff52\uff49\uff41 \uff49\uff53 \uff4f\uff50\uff45\uff4e	-
+C07-accents	no_match	zero-width spaces	t\u200bh\u200be c\u200ba\u200bf\u200be\u200bt\u200be\u200br\u200bi\u200ba i\u200bs o\u200bp\u200be\u200bn	-
+C07-accents	no_match	no-break spaces	the\u00a0cafeteria\u00a0is\u00a0open	-
+C08-dotless-i	match	as written	is this it	3:7
+C08-dotless-i	match	long s	i\u017f thi\u017f it	3:7
+C08-dotless-i	match	full-width	\uff49\uff53 \uff54\uff48\uff49\uff53 \uff49\uff54	3:7
+C08-dotless-i	match	zero-width spaces	i\u200bs t\u200bh\u200bi\u200bs i\u200bt	4:11
+C08-dotless-i	match	no-break spaces	is\u00a0this\u00a0it	3:7
+C08-dotless-i	no_match	as written	is th\u0131s it	-
+C08-dotless-i	no_match	long s	i\u017f th\u0131\u017f it	-
+C08-dotless-i	no_match	full-width	\uff49\uff53 \uff54\uff48\u0131\uff53 \uff49\uff54	-
+C08-dotless-i	no_match	zero-width spaces	i\u200bs t\u200bh\u0131s i\u200bt	-
+C08-dotless-i	no_match	no-break spaces	is\u00a0th\u0131s\u00a0it	-
+C09-hyphens	match	as written	send an e-mail	8:14
+C09-hyphens	match	long s	\u017fend an e-mail	8:14
+C09-hyphens	match	full-width	\uff53\uff45\uff4e\uff44 \uff41\uff4e \uff45\uff0d\uff4d\uff41\uff49\uff4c	8:14
+C09-hyphens	match	zero-width spaces	s\u200be\u200bn\u200bd a\u200bn e-m\u200ba\u200bi\u200bl	12:21
+C09-hyphens	match	no-break spaces	send\u00a0an\u00a0e-mail	8:14
+C09-hyphens	match	en dashes	send an e\u2013mail	8:14
+C09-hyphens	no_match	as written	send an email	-
+C09-hyphens	no_match	long s	\u017fend an email	-
+C09-hyphens	no_match	full-width	\uff53\uff45\uff4e\uff44 \uff41\uff4e \uff45\uff4d\uff41\uff49\uff4c	-
+C09-hyphens	no_match	zero-width spaces	s\u200be\u200bn\u200bd a\u200bn e\u200bm\u200ba\u200bi\u200bl	-
+C09-hyphens	no_match	no-break spaces	send\u00a0an\u00a0email	-
+C10-spaces	match	as written	no reply yet	0:8
+C10-spaces	match	full-width	\uff4e\uff4f \uff52\uff45\uff50\uff4c\uff59 \uff59\uff45\uff54	0:8
+C10-spaces	match	zero-width spaces	n\u200bo r\u200be\u200bp\u200bl\u200by y\u200be\u200bt	0:13
+C10-spaces	match	no-break spaces	no\u00a0reply\u00a0yet	0:8
+C10-spaces	no_match	as written	noreply@example.org	-
+C10-spaces	no_match	full-width	\uff4e\uff4f\uff52\uff45\uff50\uff4c\uff59\uff20\uff45\uff58\uff41\uff4d\uff50\uff4c\uff45\uff0e\uff4f\uff52\uff47	-
+C10-spaces	no_match	zero-width spaces	n\u200bo\u200br\u200be\u200bp\u200bl\u200by@e\u200bx\u200ba\u200bm\u200bp\u200bl\u200be.o\u200br\u200bg	-

@@ -1,0 +1,45 @@
+# An example rule file. Check it with:
+#
+#   node packages/js/src/cli.js check examples/rules.yaml
+#
+# Every rule needs examples that should match and examples that should not. The checker also turns
+# each example into look-alike variants (long s, full-width letters, zero-width spaces, smart quotes
+# and more) and fails if any variant gets a different answer.
+rules:
+  - id: false-reassurance
+    title: Telling someone not to worry
+    patterns:
+      - '\b(?:it|this|that)''s\s+(?:definitely\s+|completely\s+)?(?:harmless|nothing\s+to\s+worry\s+about)\b'
+      - '\bdefinitely\s+harmless\b'
+    unless:
+      - '\bwhether\b'
+    examples:
+      match:
+        - "It's definitely harmless."
+        - "That's nothing to worry about."
+      no_match:
+        - "Whether it's harmless is a question for a doctor."
+        - "It may be harmless, but get it checked."
+
+  - id: delivery-promise
+    title: Promising a date nobody agreed
+    patterns:
+      - '\bwill\s+(?:be\s+)?(?:ready|done|shipped)\s+by\s+(?:monday|tuesday|wednesday|thursday|friday|tomorrow)\b'
+    unless:
+      - '\bif\b'
+    examples:
+      match:
+        - "It will be ready by Friday."
+      no_match:
+        - "It will be ready by Friday if the review goes well."
+        - "When will it be ready?"
+
+  - id: order-number
+    title: An order number in a message
+    patterns:
+      - '\border\s+#?\d{6}\b'
+    examples:
+      match:
+        - "Your order #123456 has shipped."
+      no_match:
+        - "Your order has shipped."
