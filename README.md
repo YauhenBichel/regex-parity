@@ -75,7 +75,8 @@ With regex-parity:
 
 ## Use it
 
-Not yet on the package registries; install from this repository for now.
+Go is published. The other packages are released from this repository by one tag once each registry is set up
+([docs/RELEASING.md](docs/RELEASING.md)); until then, install them from the repository as shown.
 
 **JavaScript** (Node 20+): `npm install ./packages/js` from a clone.
 
@@ -103,7 +104,7 @@ rp.evaluate(promise, "Ready by Friday if the review passes.")  # []
 ```
 
 **Java** (17+, no dependencies): `cd packages/java && gradle publishToMavenLocal`, then depend on
-`io.github.yauhenbichel:regex-parity:0.1.0`.
+`io.github.yauhenbichel:regex-parity:0.2.0`.
 
 ```java
 import io.github.yauhenbichel.regexparity.RegexParity;
@@ -113,7 +114,7 @@ RegexParity.findAll("\\border\\s+\\d{6}\\b", "order １２３４５６", false);
 ```
 
 **Go** (1.26+; the only dependency is `golang.org/x/text`, for NFKC):
-`go get github.com/YauhenBichel/regex-parity/go`
+`go get github.com/YauhenBichel/regex-parity/go@v0.2.0` (published)
 
 ```go
 import regexparity "github.com/YauhenBichel/regex-parity/go"
