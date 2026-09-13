@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+
+    <PackageId>RegexParity</PackageId>
+    <Version>0.2.0</Version>
+    <Authors>Yauhen Bichel</Authors>
+    <Description>One set of regular-expression rules, the same answer in C#, JavaScript, Python, Java, Go and Rust, even on text with accents, look-alike or invisible characters.</Description>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/YauhenBichel/regex-parity</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/YauhenBichel/regex-parity</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>regex;unicode;normalization;nfkc;cross-language;guardrails</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+
+</Project>
