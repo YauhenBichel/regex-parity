@@ -23,6 +23,8 @@ jobs:
       - run: npm test
       - name: the example rules are ready
         run: npm run check
+      - name: every package carries the same version
+        run: python3 scripts/check-versions.py "$(node -p 'require("./packages/js/package.json").version')"
       - name: the conformance files are current
         run: |
           npm run cases

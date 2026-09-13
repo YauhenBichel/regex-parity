@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "regex-parity"
-version = "0.1.0"
+version = "0.2.0"
 description = "One set of regular-expression rules, the same answer in Python, JavaScript and Java, even on text with accents, look-alike or invisible characters."
 readme = "README.md"
 requires-python = ">=3.10"
