@@ -4,7 +4,7 @@ Thanks for looking. Issues and pull requests are both welcome.
 
 ## The most useful contribution right now
 
-**An engine case that breaks the design.** ruleproof rests on one claim: fold the text first, match
+**An engine case that breaks the design.** regex-parity rests on one claim: fold the text first, match
 with ASCII semantics, and JavaScript, Python and Java give the same answer. If you find an input,
 a pattern or an engine version where that is false, add a line to `test/evidence/cases.tsv`, run
 the evidence, and open a pull request with what each engine said. That is worth more than any code
