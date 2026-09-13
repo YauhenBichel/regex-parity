@@ -10,7 +10,7 @@ import pathlib
 import sys
 
 INVISIBLE = {0x000B, 0x00AD, 0x180E, 0xFEFF, 0x2028, 0x2029, *range(0x200B, 0x2010), *range(0x202A, 0x202F), *range(0x2060, 0x2065)}
-SKIP = {"node_modules", "build", ".gradle", "__pycache__", "dist", "_site"}
+SKIP = {"node_modules", "build", ".gradle", "__pycache__", "dist", "_site", "target", "bin", "obj"}
 
 roots = [pathlib.Path(p) for p in sys.argv[1:]] or [pathlib.Path(__file__).parent]
 found = []

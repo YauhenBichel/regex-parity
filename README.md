@@ -11,8 +11,8 @@ For example, a rule meant to catch false reassurance, checked against `That's de
 |---|---|---|---|
 | Does `\bharmless\b` match? | no | yes | yes |
 
-**regex-parity is a small library with the same functions in JavaScript, Python, Java and Go. It
-makes one set of regex rules give the same answer in all of them**, and comes with a command that checks
+**regex-parity is a small library with the same functions in JavaScript, Python, Java, Go, Rust, C# and
+Ruby. It makes one set of regex rules give the same answer in all of them**, and comes with a command that checks
 your rules before you ship them.
 
 **[Try it in your browser](https://yauhenbichel.github.io/regex-parity/)**: type a pattern and some
@@ -54,7 +54,7 @@ The full list is in [docs/SPEC.md](docs/SPEC.md).
 
 **It is tested, not promised.** Every package must reproduce one shared file,
 [`conformance/cases.tsv`](conformance/cases.tsv): 121 cases, each a rule, a text and the exact
-positions found. CI runs it in JavaScript, Python, Java and Go on every change.
+positions found. CI runs it in all seven languages on every change.
 
 ## How it helps
 
@@ -73,7 +73,7 @@ With regex-parity:
 
 ## Use it
 
-Not yet on npm, PyPI or Maven Central; install from this repository for now.
+Not yet on the package registries; install from this repository for now.
 
 **JavaScript** (Node 20+): `npm install ./packages/js` from a clone.
 
@@ -118,6 +118,34 @@ import regexparity "github.com/YauhenBichel/regex-parity/go"
 
 ok, _ := regexparity.Matches(`\bharmless\b`, "definitely harmleſs", false)       // true
 found, _ := regexparity.FindAll(`\border\s+\d{6}\b`, "order １２３４５６", false)  // [{Start:0 End:24 Text:order １２３４５６}]: Go counts bytes
+```
+
+**Rust**: `cargo add regex-parity --git https://github.com/YauhenBichel/regex-parity`
+
+```rust
+use regex_parity::{find_all, matches};
+
+assert!(matches(r"\bharmless\b", "definitely harmleſs", false)?);
+let found = find_all(r"\border\s+\d{6}\b", "order １２３４５６", false)?;   // one match: bytes 0 to 24
+```
+
+**C#** (.NET 8+, no dependencies): from a clone, `dotnet add reference packages/dotnet/src/RegexParity`
+
+```csharp
+using RegexParity;
+
+Parity.Matches(@"\bharmless\b", "definitely harmleſs");         // true
+Parity.FindAll(@"\border\s+\d{6}\b", "order １２３４５６");         // one match: start 0, end 12
+```
+
+**Ruby** (3.1+, no dependencies): in a Gemfile,
+`gem "regex-parity", git: "https://github.com/YauhenBichel/regex-parity", glob: "packages/ruby/*.gemspec"`
+
+```ruby
+require "regex_parity"
+
+RegexParity.matches?('\bharmless\b', "definitely harmleſs")        # => true
+RegexParity.find_all('\border\s+\d{6}\b', "order １２３４５６")         # one match: start 0, end 12
 ```
 
 ### Check your rules before you ship them

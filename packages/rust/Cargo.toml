@@ -1,0 +1,20 @@
+[package]
+name = "regex-parity"
+version = "0.2.0"
+edition = "2021"
+description = "One set of regular-expression rules, the same answer in Rust, JavaScript, Python, Java and Go, even on text with accents, look-alike or invisible characters."
+license = "Apache-2.0"
+repository = "https://github.com/YauhenBichel/regex-parity"
+homepage = "https://yauhenbichel.github.io/regex-parity/"
+documentation = "https://docs.rs/regex-parity"
+readme = "README.md"
+keywords = ["regex", "unicode", "normalization", "nfkc", "cross-language"]
+categories = ["text-processing"]
+include = ["src/**", "tests/**", "README.md", "Cargo.toml"]
+
+[lib]
+name = "regex_parity"
+
+[dependencies]
+regex = "1.11"
+unicode-normalization = "0.1.24"
