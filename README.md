@@ -57,7 +57,7 @@ After normalising, all three agree on every row; Java also needs `\b` rewritten,
 
 ## Not a medical device
 
-ruleproof checks text with regular expressions. It does not diagnose anything, and it is not a
+regex-parity checks text with regular expressions. It does not diagnose anything, and it is not a
 safety certification for a product built with it. Some examples mention health wording because
 that is where the problem was found.
 
