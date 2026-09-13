@@ -7,7 +7,7 @@ import { RE2JS } from "re2js";
 import { parse } from "yaml";
 import { checkPattern, compile, evaluate, findAll, fold, variants } from "./index.js";
 
-const USAGE = `regex-parity: one set of regex rules, the same answer in JavaScript, Python and Java
+const USAGE = `regex-parity: one set of regex rules, the same answer in JavaScript, Python, Java and Go
 
   regex-parity check <rules.yaml>          validate the rules, compile them in RE2 too, and run
                                            every example and its look-alike variants
@@ -132,7 +132,7 @@ function printCheck(result) {
   console.log(
     result.failed
       ? "regex-parity: these rules are not ready"
-      : `regex-parity: ${result.rules.length} rules give the same answers in JavaScript, Python and Java`,
+      : `regex-parity: ${result.rules.length} rules give the same answers in every regex-parity language`,
   );
 }
 
@@ -157,7 +157,20 @@ function writeCases(path, directory) {
       }
     }
   }
+  const portability = parse(readFileSync(path, "utf8"))?.portability ?? {};
+  const patterns = ["# expect\tpattern (escaped like the others): every language must refuse or accept it alike"];
+  for (const [list, expect] of [[portability.refused ?? [], "refused"], [portability.accepted ?? [], "accepted"]]) {
+    for (const source of list) {
+      const refused = checkPattern(source).length > 0;
+      if (refused !== (expect === "refused")) {
+        console.log(`FAIL portability: ${JSON.stringify(source)} is listed as ${expect} but is ${refused ? "refused" : "accepted"}`);
+        return 1;
+      }
+      patterns.push([expect, escape(source)].join("\t"));
+    }
+  }
   mkdirSync(directory, { recursive: true });
+  if (patterns.length > 1) writeFileSync(join(directory, "patterns.tsv"), patterns.join("\n") + "\n");
   writeFileSync(join(directory, "rules.tsv"), rules.join("\n") + "\n");
   writeFileSync(join(directory, "cases.tsv"), cases.join("\n") + "\n");
   console.log(`regex-parity: wrote ${rules.length - 1} patterns and ${cases.length - 1} cases to ${directory}`);

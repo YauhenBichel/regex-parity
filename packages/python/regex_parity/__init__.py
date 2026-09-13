@@ -48,7 +48,8 @@ _APOSTROPHES = frozenset({0x2018, 0x2019, 0x201A, 0x201B, 0x02BC, 0x2032})
 _QUOTES = frozenset({0x201C, 0x201D, 0x201E, 0x201F})
 # Line breaks engines disagree about for "." and \s. All of them become "\n".
 _LINE_BREAKS = frozenset({0x000D, 0x0085, 0x2028, 0x2029})
-_OGHAM_SPACE_MARK = 0x1680
+# Spaces some engines' \s does not match: Go's \s leaves out the vertical tab.
+_ODD_SPACES = frozenset({0x000B, 0x1680})
 
 
 def _fold_code_point(code_point: int) -> str:
@@ -62,7 +63,7 @@ def _fold_code_point(code_point: int) -> str:
         return '"'
     if code_point in _LINE_BREAKS:
         return "\n"
-    if code_point == _OGHAM_SPACE_MARK:
+    if code_point in _ODD_SPACES:
         return " "
     return chr(code_point)
 
@@ -98,7 +99,8 @@ def fold(text: str) -> Folded:
 
 
 _LETTER_ESCAPES = "bBdDsSwWtnrf"
-_QUANTIFIER = re.compile(r"\{\d+(?:,\d*)?\}")
+_QUANTIFIER = re.compile(r"\{(\d+)(?:,(\d*))?\}")
+_MAX_REPEAT = 1000  # RE2 and Go refuse more
 
 
 def check_pattern(source: str) -> list[str]:
@@ -135,6 +137,8 @@ def check_pattern(source: str) -> list[str]:
                 add("'[' inside a character class is not portable: Java reads it as a nested class")
             elif c == "&" and source[i + 1 : i + 2] == "&":
                 add("'&&' inside a character class is not portable")
+            elif c in "-~" and source[i + 1 : i + 2] == c:
+                add("'--' and '~~' inside a character class are not portable: Rust reads them as set operations")
             elif c == "]":
                 in_class = False
             i += 1
@@ -159,6 +163,8 @@ def check_pattern(source: str) -> list[str]:
             if not quantifier:
                 add("a '{' that is not a {n}, {n,} or {n,m} quantifier is not portable; write \\{")
             else:
+                if int(quantifier.group(1)) > _MAX_REPEAT or int(quantifier.group(2) or 0) > _MAX_REPEAT:
+                    add("a repetition count above 1000 is not portable: RE2 and Go refuse it")
                 i = quantifier.end()
                 if source[i : i + 1] == "+":
                     add("possessive quantifiers are not portable")

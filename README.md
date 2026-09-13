@@ -11,8 +11,8 @@ For example, a rule meant to catch false reassurance, checked against `That's de
 |---|---|---|---|
 | Does `\bharmless\b` match? | no | yes | yes |
 
-**regex-parity is a small library with the same functions in JavaScript, Python and Java. It makes
-one set of regex rules give the same answer in all three**, and comes with a command that checks
+**regex-parity is a small library with the same functions in JavaScript, Python, Java and Go. It
+makes one set of regex rules give the same answer in all of them**, and comes with a command that checks
 your rules before you ship them.
 
 **[Try it in your browser](https://yauhenbichel.github.io/regex-parity/)**: type a pattern and some
@@ -52,9 +52,9 @@ The full list is in [docs/SPEC.md](docs/SPEC.md).
 **3. Report positions in the original text.** A match on the folded text is mapped back, so its
 `start`, `end` and `text` point at exactly what was written, invisible characters included.
 
-**It is tested, not promised.** All three packages must reproduce one shared file,
+**It is tested, not promised.** Every package must reproduce one shared file,
 [`conformance/cases.tsv`](conformance/cases.tsv): 121 cases, each a rule, a text and the exact
-positions found. CI runs it in JavaScript, Python and Java on every change.
+positions found. CI runs it in JavaScript, Python, Java and Go on every change.
 
 ## How it helps
 
@@ -110,6 +110,16 @@ RegexParity.matches("\\bharmless\\b", "definitely harmleſs", false);   // true
 RegexParity.findAll("\\border\\s+\\d{6}\\b", "order １２３４５６", false);  // [Match[start=0, end=12, text=order １２３４５６]]
 ```
 
+**Go** (1.26+; the only dependency is `golang.org/x/text`, for NFKC):
+`go get github.com/YauhenBichel/regex-parity/go`
+
+```go
+import regexparity "github.com/YauhenBichel/regex-parity/go"
+
+ok, _ := regexparity.Matches(`\bharmless\b`, "definitely harmleſs", false)       // true
+found, _ := regexparity.FindAll(`\border\s+\d{6}\b`, "order １２３４５６", false)  // [{Start:0 End:24 Text:order １２３４５６}]: Go counts bytes
+```
+
 ### Check your rules before you ship them
 
 A rule has patterns, optional `unless` patterns that cancel a match in the same sentence, and
@@ -135,7 +145,7 @@ $ node packages/js/src/cli.js check examples/rules.yaml
 ok   false-reassurance  4 examples, 20 look-alike variants
 ok   delivery-promise  3 examples, 10 look-alike variants
 ok   order-number  2 examples, 8 look-alike variants
-regex-parity: 3 rules give the same answers in JavaScript, Python and Java
+regex-parity: 3 rules give the same answers in every regex-parity language
 ```
 
 And one text at a time (that `K` is U+212A, the Kelvin sign):

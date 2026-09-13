@@ -89,11 +89,11 @@ class RegexParityTest {
   void patternsEnginesReadDifferentlyAreRefused() {
     String backslash = String.valueOf((char) 92);
     List<String> refused = List.of("(?=a)", "(?<!a)b", "(a)\\1", "(?<name>a)", "(?i)a", "a$", "\\p{L}", "a++", "a{,3}", "x{",
-        "[[a]]", "[a&&b]", "[]a]", "\\x41", backslash + "u0041", "\\Aa", "\\v", "caf" + cp(0x00E9), "[\\b]");
+        "[[a]]", "[a&&b]", "[]a]", "\\x41", backslash + "u0041", "\\Aa", "\\v", "caf" + cp(0x00E9), "[\\b]", "a{1001}", "a{2,5000}");
     for (String source : refused) {
       assertFalse(RegexParity.checkPattern(source).isEmpty(), source);
     }
-    List<String> accepted = List.of("\\bcolou?r\\b", "a{2,3}", "a{2}", "[a-z\\]]", "\\(\\?=", "(?:ab)+?", "\\d+\\.\\d*", "[^.!?]{0,30}", "\\$5");
+    List<String> accepted = List.of("\\bcolou?r\\b", "a{2,3}", "a{2}", "[a-z\\]]", "\\(\\?=", "(?:ab)+?", "\\d+\\.\\d*", "[^.!?]{0,30}", "\\$5", "a{1000}");
     for (String source : accepted) {
       assertEquals(List.of(), RegexParity.checkPattern(source), source);
     }
@@ -184,5 +184,15 @@ class RegexParityTest {
       }
     }
     assertEquals(expected, RegexParity.variants(unescape(base[3]), rules.get(base[0]).caseSensitive()), base[3]);
+  }
+
+  @Test
+  void conformanceEveryLanguageRefusesAndAcceptsTheSamePatterns() throws IOException {
+    List<String[]> patterns = rows("patterns.tsv");
+    assertTrue(patterns.size() > 10);
+    for (String[] row : patterns) {
+      String source = unescape(row[1]);
+      assertEquals(row[0].equals("refused"), !RegexParity.checkPattern(source).isEmpty(), source);
+    }
   }
 }

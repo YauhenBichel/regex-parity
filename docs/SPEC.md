@@ -1,4 +1,4 @@
-# regex-parity specification, version 0.1 (profile `portable-1`)
+# regex-parity specification, version 0.2 (profile `portable-1`)
 
 What every implementation does, precisely enough to write another one without reading the existing
 three. The JavaScript, Python and Java packages all follow it, and all must reproduce
@@ -21,12 +21,13 @@ Code points are written U+XXXX.
 | U+2018, U+2019, U+201A, U+201B, U+02BC, U+2032 | `'` |
 | U+201C–U+201F | `"` |
 | U+000D, U+0085, U+2028, U+2029 | newline (U+000A) |
-| U+1680 | space |
+| U+000B, U+1680 | space (Go's `\s` does not match a vertical tab) |
 | anything else | itself |
 
-Every unit written records the start and end of the original code point it came from. JavaScript
-and Java count UTF-16 code units; Python counts code points. For text below U+10000 the offsets are
-identical.
+Every unit written records the start and end of the original code point it came from. Each
+language reports offsets in its own string indexes: UTF-16 code units in JavaScript and Java, code
+points in Python, bytes in Go. The conformance files count characters, which for text below U+10000
+is the same as UTF-16 code units; the Go tests convert.
 
 A range `[s, e)` of folded text maps back to `[start of unit s, end of unit e-1]`. An empty range
 maps to the start of unit `s`, or to the length of the original when `s` is the end.
@@ -41,9 +42,11 @@ A pattern is refused, with a reason, when it contains any of:
 - `\b` or `\B` inside a character class;
 - `(?` not followed by `:` (lookaround, named groups, inline flags, atomic groups, comments);
 - `$` outside a character class (Python and Java also match it before a final newline);
-- `{` that does not begin a `{n}`, `{n,}` or `{n,m}` quantifier;
+- `{` that does not begin a `{n}`, `{n,}` or `{n,m}` quantifier, or a count in one above 1000
+  (RE2 and Go refuse more);
 - a possessive quantifier: `*+`, `++`, `?+`, `}+`;
-- inside a character class: `[` (Java reads a nested class), `&&` (Java reads an intersection), or
+- inside a character class: `[` (Java reads a nested class), `&&` (Java reads an intersection), `--`
+  or `~~` (Rust reads set operations), or
   a class that starts with `]` or `^]`;
 - an unclosed character class, or a trailing backslash.
 
@@ -59,6 +62,7 @@ ASCII semantics for `\b \B \w \W \d \D \s \S` and for case:
 |---|---|
 | JavaScript | flags `g` plus `i`; never `u` |
 | Python `re` | `re.ASCII`, plus `re.IGNORECASE` |
+| Go `regexp` | `(?i)` prefix unless case-sensitive; `\b \w \d \s` are already ASCII, and after folding its case folding is too |
 | Java `java.util.regex` | `CASE_INSENSITIVE` without `UNICODE_CASE`; `\b` and `\B` rewritten to `(?:(?<=W)(?!W)\|(?<!W)(?=W))` and `(?:(?<=W)(?=W)\|(?<!W)(?!W))` with `W` = `[A-Za-z0-9_]`, because Java's own `\b` treats letters such as `é` as word characters |
 
 Matches are the engine's non-overlapping matches in order. **Empty matches are ignored**, because
@@ -122,6 +126,9 @@ written as a backslash, `u` and four lower-case hexadecimal digits.
 - `cases.tsv`: `rule`, `expect` (`match` or `no_match`), `variant` (`as written` or a variant
   name), `text`, and the findings as `start:end` joined by commas, or `-` for none. Each example is
   followed by its variants, in the order of section 6.
+
+- `patterns.tsv`: `expect` (`refused` or `accepted`), `pattern`. Every implementation's pattern check
+  must agree.
 
 An implementation conforms when, for every row, `evaluate` gives a non-empty result exactly when
 `expect` is `match`, the findings are exactly the recorded ranges, and `variants` of each example

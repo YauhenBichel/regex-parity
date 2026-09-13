@@ -60,10 +60,10 @@ class Behaviour(unittest.TestCase):
 
     def test_patterns_engines_read_differently_are_refused(self):
         refused = ["(?=a)", "(?<!a)b", r"(a)\1", "(?P<name>a)", "(?i)a", "a$", r"\p{L}", "a++", "a{,3}", "x{",
-                   "[[a]]", "[a&&b]", "[]a]", r"\x41", chr(92) + "u0041", r"\Aa", r"\v", "caf" + cp(0x00E9), r"[\b]"]
+                   "a{1001}", "a{2,5000}", "[[a]]", "[a&&b]", "[]a]", r"\x41", chr(92) + "u0041", r"\Aa", r"\v", "caf" + cp(0x00E9), r"[\b]"]
         for source in refused:
             self.assertTrue(rp.check_pattern(source), source)
-        accepted = [r"\bcolou?r\b", "a{2,3}", "a{2}", r"[a-z\]]", r"\(\?=", "(?:ab)+?", r"\d+\.\d*", "[^.!?]{0,30}", r"\$5"]
+        accepted = [r"\bcolou?r\b", "a{2,3}", "a{2}", r"[a-z\]]", r"\(\?=", "(?:ab)+?", r"\d+\.\d*", "[^.!?]{0,30}", r"\$5", "a{1000}"]
         for source in accepted:
             self.assertEqual(rp.check_pattern(source), [], source)
         with self.assertRaises(rp.PatternError):
@@ -125,6 +125,12 @@ class Conformance(unittest.TestCase):
             rule = self.rules[base["rule"]]
             got = [(v.name, v.text) for v in rp.variants(base["text"], rule.case_sensitive)]
             self.assertEqual(got, expected, base["text"])
+
+    def test_every_language_refuses_and_accepts_the_same_patterns(self):
+        patterns = _rows("patterns.tsv")
+        self.assertGreater(len(patterns), 10)
+        for expect, source in patterns:
+            self.assertEqual(bool(rp.check_pattern(_unescape(source))), expect == "refused", source)
 
 
 if __name__ == "__main__":

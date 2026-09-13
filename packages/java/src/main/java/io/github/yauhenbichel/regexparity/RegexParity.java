@@ -36,10 +36,11 @@ public final class RegexParity {
   private static final Set<Integer> QUOTES = Set.of(0x201C, 0x201D, 0x201E, 0x201F);
   // Line breaks engines disagree about for "." and \s. All of them become "\n".
   private static final Set<Integer> LINE_BREAKS = Set.of(0x000D, 0x0085, 0x2028, 0x2029);
-  private static final int OGHAM_SPACE_MARK = 0x1680;
+  // Spaces some engines' \s does not match: Go's \s leaves out the vertical tab.
+  private static final Set<Integer> ODD_SPACES = Set.of(0x000B, 0x1680);
 
   private static final String LETTER_ESCAPES = "bBdDsSwWtnrf";
-  private static final Pattern QUANTIFIER = Pattern.compile("\\{\\d+(?:,\\d*)?\\}");
+  private static final Pattern QUANTIFIER = Pattern.compile("\\{(\\d+)(?:,(\\d*))?\\}");
   private static final String WORD = "[A-Za-z0-9_]";
   // Java's own \b counts letters such as é as word characters; every other port does not.
   private static final String BOUNDARY =
@@ -114,7 +115,7 @@ public final class RegexParity {
     if (LINE_BREAKS.contains(codePoint)) {
       return "\n";
     }
-    if (codePoint == OGHAM_SPACE_MARK) {
+    if (ODD_SPACES.contains(codePoint)) {
       return " ";
     }
     return new String(Character.toChars(codePoint));
@@ -188,6 +189,8 @@ public final class RegexParity {
           problems.add("'[' inside a character class is not portable: Java reads it as a nested class");
         } else if (c == '&' && i + 1 < n && source.charAt(i + 1) == '&') {
           problems.add("'&&' inside a character class is not portable");
+        } else if ((c == '-' || c == '~') && i + 1 < n && source.charAt(i + 1) == c) {
+          problems.add("'--' and '~~' inside a character class are not portable: Rust reads them as set operations");
         } else if (c == ']') {
           inClass = false;
         }
@@ -217,6 +220,9 @@ public final class RegexParity {
         if (!quantifier.lookingAt()) {
           problems.add("a '{' that is not a {n}, {n,} or {n,m} quantifier is not portable; write \\{");
         } else {
+          if (tooLarge(quantifier.group(1)) || tooLarge(quantifier.group(2))) {
+            problems.add("a repetition count above 1000 is not portable: RE2 and Go refuse it");
+          }
           i = quantifier.end();
           if (i < n && source.charAt(i) == '+') {
             problems.add("possessive quantifiers are not portable");
@@ -232,6 +238,11 @@ public final class RegexParity {
       problems.add("unclosed character class");
     }
     return List.copyOf(problems);
+  }
+
+  // RE2 and Go refuse repetition counts above 1000.
+  private static boolean tooLarge(String digits) {
+    return digits != null && !digits.isEmpty() && (digits.length() > 4 || Integer.parseInt(digits) > 1000);
   }
 
   /** Compiles a portable pattern for folded text: CASE_INSENSITIVE (ASCII only) unless caseSensitive. */

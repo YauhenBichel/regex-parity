@@ -117,6 +117,10 @@ C10-spaces	match	as written	no reply yet	0:8
 C10-spaces	match	full-width	\uff4e\uff4f \uff52\uff45\uff50\uff4c\uff59 \uff59\uff45\uff54	0:8
 C10-spaces	match	zero-width spaces	n\u200bo r\u200be\u200bp\u200bl\u200by y\u200be\u200bt	0:13
 C10-spaces	match	no-break spaces	no\u00a0reply\u00a0yet	0:8
+C10-spaces	match	as written	no\u000breply yet	0:8
+C10-spaces	match	full-width	\uff4e\uff4f\u000b\uff52\uff45\uff50\uff4c\uff59 \uff59\uff45\uff54	0:8
+C10-spaces	match	zero-width spaces	n\u200bo\u000br\u200be\u200bp\u200bl\u200by y\u200be\u200bt	0:13
+C10-spaces	match	no-break spaces	no\u000breply\u00a0yet	0:8
 C10-spaces	no_match	as written	noreply@example.org	-
 C10-spaces	no_match	full-width	\uff4e\uff4f\uff52\uff45\uff50\uff4c\uff59\uff20\uff45\uff58\uff41\uff4d\uff50\uff4c\uff45\uff0e\uff4f\uff52\uff47	-
 C10-spaces	no_match	zero-width spaces	n\u200bo\u200br\u200be\u200bp\u200bl\u200by@e\u200bx\u200ba\u200bm\u200bp\u200bl\u200be.o\u200br\u200bg	-

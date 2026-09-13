@@ -64,9 +64,9 @@ test("the sentence function includes its terminator and skips leading spaces", (
 });
 
 test("patterns that engines read differently are refused", () => {
-  const refused = ["(?=a)", "(?<!a)b", "(a)\\1", "(?<name>a)", "(?i)a", "a$", "\\p{L}", "a++", "a{,3}", "x{", "[[a]]", "[a&&b]", "[]a]", "\\x41", String.fromCharCode(92) + "u0041", "\\Aa", "\\v", `caf${cp(0x00e9)}`, "[\\b]"];
+  const refused = ["(?=a)", "(?<!a)b", "(a)\\1", "(?<name>a)", "(?i)a", "a$", "\\p{L}", "a++", "a{,3}", "x{", "[[a]]", "[a&&b]", "[]a]", "\\x41", String.fromCharCode(92) + "u0041", "\\Aa", "\\v", `caf${cp(0x00e9)}`, "[\\b]", "a{1001}", "a{2,5000}"];
   for (const source of refused) assert.notEqual(checkPattern(source).length, 0, source);
-  const accepted = ["\\bcolou?r\\b", "a{2,3}", "a{2}", "[a-z\\]]", "\\(\\?=", "(?:ab)+?", "\\d+\\.\\d*", "[^.!?]{0,30}", "\\$5"];
+  const accepted = ["\\bcolou?r\\b", "a{2,3}", "a{2}", "[a-z\\]]", "\\(\\?=", "(?:ab)+?", "\\d+\\.\\d*", "[^.!?]{0,30}", "\\$5", "a{1000}"];
   for (const source of accepted) assert.deepEqual(checkPattern(source), [], source);
   assert.throws(() => compile("(?=a)"), PatternError);
   assert.throws(() => compile("(a"), PatternError);
@@ -124,4 +124,10 @@ test("conformance: variants are generated exactly as recorded", () => {
     }
   }
   flush();
+});
+
+test("conformance: every language refuses and accepts the same patterns", () => {
+  const patterns = rows("patterns.tsv");
+  assert.ok(patterns.length > 10);
+  for (const [expect, source] of patterns) assert.equal(checkPattern(unescape(source)).length > 0, expect === "refused", source);
 });
