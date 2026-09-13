@@ -29,6 +29,8 @@ jobs:
         run: |
           npm run cases
           git diff --exit-code -- conformance
+      - name: the release setup script passes shellcheck
+        run: shellcheck scripts/setup-release.sh
       - name: no raw invisible characters anywhere in the code
         run: python3 test/evidence/no-invisible.py packages conformance docs examples test
 

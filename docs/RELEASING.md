@@ -16,6 +16,21 @@ git tag v0.2.0 && git push origin v0.2.0
 
 A registry with its variable unset is skipped, so one that is not set up yet never blocks the others.
 
+## The quick way
+
+```bash
+bash scripts/setup-release.sh              # every registry, asking before each
+bash scripts/setup-release.sh status       # what is set up already
+```
+
+For each registry the script opens the page where you have to act, shows the exact values to enter,
+then stores the variables and secrets below for you. For Maven Central it also creates, uploads and
+stores a signing key. At the end it offers to tag the release. Secrets are read without echo and passed
+to `gh` on standard input, never shown or written to disk. `DRY_RUN=1` shows what it would change.
+
+For npm and crates.io, run it once more after the first release (`bash scripts/setup-release.sh npm crates`):
+it switches them to trusted publishing and deletes the tokens.
+
 ## One-time setup, per registry
 
 Everything below is done once, by the repository owner, on the registry's website and in
