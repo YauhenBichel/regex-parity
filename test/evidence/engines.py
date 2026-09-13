@@ -8,8 +8,8 @@ import re
 import unicodedata
 from pathlib import Path
 
-INVISIBLE = re.compile("[­᠎​-‏‪-‮⁠-⁤﻿]")
-DASH = re.compile("[‐-―−﹘﹣－]")
+INVISIBLE = re.compile("[\u00ad\u180e\u200b-\u200f\u202a-\u202e\u2060-\u2064\ufeff]")
+DASH = re.compile("[\u2010-\u2015\u2212\ufe58\ufe63\uff0d]")
 
 
 def fold(text: str) -> str:
@@ -21,9 +21,9 @@ def fold(text: str) -> str:
                 continue
             if DASH.match(piece):
                 piece = "-"
-            elif piece in "  ":
+            elif piece in "\u2028\u2029":
                 piece = "\n"
-            elif piece == " ":
+            elif piece == "\u1680":
                 piece = " "
             out.append(piece)
     return "".join(out)

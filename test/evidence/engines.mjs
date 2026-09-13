@@ -4,8 +4,8 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
-const INVISIBLE = /[­᠎​-‏‪-‮⁠-⁤﻿]/;
-const DASH = /[‐-―−﹘﹣－]/;
+const INVISIBLE = /[\u00ad\u180e\u200b-\u200f\u202a-\u202e\u2060-\u2064\ufeff]/;
+const DASH = /[\u2010-\u2015\u2212\ufe58\ufe63\uff0d]/;
 
 // NFKC one code point at a time, invisible characters out, dashes to "-".
 export function fold(text) {
@@ -13,7 +13,7 @@ export function fold(text) {
   for (const character of text) {
     for (const piece of character.normalize("NFKC")) {
       if (INVISIBLE.test(piece)) continue;
-      out += DASH.test(piece) ? "-" : piece === " " || piece === " " ? "\n" : piece === " " ? " " : piece;
+      out += DASH.test(piece) ? "-" : piece === "\u2028" || piece === "\u2029" ? "\n" : piece === "\u1680" ? " " : piece;
     }
   }
   return out;

@@ -10,6 +10,8 @@ here=$(cd "$(dirname "$0")" && pwd)
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 
+python3 "$here/no-invisible.py" "$here"
+
 node "$here/engines.mjs" > "$tmp/js"
 python3 "$here/engines.py" > "$tmp/python"
 java "$here/Engines.java" "$here/cases.tsv" > "$tmp/java"
