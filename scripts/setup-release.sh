@@ -53,6 +53,20 @@ ask() { # ask PROMPT: prints the (non-empty) answer
   printf '%s' "$answer"
 }
 
+ask_name() { # ask_name PROMPT: a user name, letters digits . _ - only
+  local answer=""
+  while :; do
+    read -r -p "$1 " answer || die "no answer"
+    case "$answer" in
+      "" | *[!A-Za-z0-9._-]*) warn "  That does not look like a user name (letters, digits, . _ - only); try again." ;;
+      *)
+        printf '%s' "$answer"
+        return 0
+        ;;
+    esac
+  done
+}
+
 pause() { read -r -p "  Press Enter once that is saved (Ctrl-C stops here) " _ || true; }
 
 open_url() {
@@ -87,13 +101,20 @@ set_variable() { # set_variable NAME VALUE
 
 secret_exists() { gh api "repos/$REPO/environments/$1/secrets/$2" >/dev/null 2>&1; }
 
-store_secret() { # store_secret ENVIRONMENT NAME PROMPT: reads it without echo
+store_secret() { # store_secret ENVIRONMENT NAME PROMPT: reads it without echo; fails when you type skip
   local value=""
+  say "  (Nothing appears while you paste. Paste with Cmd+V, then press Enter. Type skip to do this later.)"
   while [ -z "$value" ]; do
     IFS= read -r -s -p "  $3: " value || die "no answer"
     printf '\n'
-    [ -z "$value" ] && warn "  That was empty; try again."
+    if [ -z "$value" ]; then
+      warn "  Nothing was pasted. Copy it from the web page first, paste here with Cmd+V, then press Enter."
+    fi
   done
+  if [ "$value" = skip ]; then
+    say "  Skipped for now."
+    return 1
+  fi
   if [ "$DRY_RUN" = 1 ]; then
     say "  (dry run) would store secret $2 in environment $1 (${#value} characters)"
   else
@@ -174,11 +195,13 @@ setup_rubygems() {
 setup_nuget() {
   bold "NuGet  (RegexParity)"
   skip_if_done PUBLISH_NUGET && return 0
-  say "  Log in to NuGet and create a Trusted Publishing policy (GitHub Actions):"
+  say "  Log in to NuGet and create a Trusted Publishing policy (GitHub Actions)."
+  say "  This is not an API key: if you see a field for glob patterns or packages, you are on the API"
+  say "  keys page. Use the account menu → Trusted Publishing instead."
   open_url "https://www.nuget.org/account/trustedpublishing"
   form_values nuget
   pause
-  set_variable NUGET_USER "$(ask "  Your nuget.org user name (the policy's owner):")"
+  set_variable NUGET_USER "$(ask_name "  Your nuget.org user name, as shown at the top right of nuget.org:")"
   set_variable PUBLISH_NUGET true
 }
 
@@ -199,14 +222,16 @@ setup_npm() {
   skip_if_done PUBLISH_NPM && return 0
   say "  npm adds a trusted publisher only to a package that exists, so the first release uses a token."
   local user
-  user=$(ask "  Your npmjs.com user name:")
+  user=$(ask_name "  Your npmjs.com user name:")
   open_url "https://www.npmjs.com/settings/$user/tokens/granular-access-tokens/new"
-  say "  Generate a granular access token:"
+  say "  On that page (Generate New Token → Granular Access Token):"
   say "    Token name             regex-parity first release"
+  say "    Bypass 2FA             tick it, if the page shows it"
   say "    Expiration             7 days"
-  say "    Packages and scopes    Read and write, all packages"
-  say "    If your account needs two-factor authentication to publish, allow the token to bypass it."
-  store_secret npm NPM_TOKEN "Paste the token"
+  say "    Packages and scopes    Permissions: Read and write; select: All packages"
+  say "    Organizations          No access"
+  say "  Press Generate token, copy the token it shows once (it starts with npm_), and paste it below."
+  store_secret npm NPM_TOKEN "Paste the npm token" || return 0
   set_variable PUBLISH_NPM true
   say "  After the first release, run: bash scripts/setup-release.sh npm  (it switches npm to trusted publishing)"
 }
@@ -233,7 +258,8 @@ setup_crates() {
   say "    Expiration             7 days"
   say "    Scopes                 publish-new, publish-update"
   say "    Crates                 regex-parity"
-  store_secret crates-io CARGO_REGISTRY_TOKEN "Paste the token"
+  say "  Press Generate Token, copy the token it shows once, and paste it below."
+  store_secret crates-io CARGO_REGISTRY_TOKEN "Paste the crates.io token" || return 0
   set_variable PUBLISH_CRATES true
   say "  After the first release, run: bash scripts/setup-release.sh crates  (it switches to trusted publishing)"
 }
@@ -252,8 +278,8 @@ setup_maven() {
   pause
   say "  2. Generate a user token (View Account → Generate User Token), then paste its two halves:"
   open_url "https://central.sonatype.com/usertoken"
-  store_secret maven-central MAVEN_CENTRAL_USERNAME "Token username"
-  store_secret maven-central MAVEN_CENTRAL_PASSWORD "Token password"
+  store_secret maven-central MAVEN_CENTRAL_USERNAME "Token username" || return 0
+  store_secret maven-central MAVEN_CENTRAL_PASSWORD "Token password" || return 0
 
   say "  3. A key to sign releases with."
   local fingerprint="" passphrase="" again="" email="" name
