@@ -1,15 +1,11 @@
 plugins {
     id 'java-library'
-    id 'maven-publish'
+    id 'com.vanniktech.maven.publish' version '0.33.0'
 }
 
 group = 'io.github.yauhenbichel'
-version = '0.1.0'
-description = 'One set of regular-expression rules, the same answer in Java, JavaScript and Python.'
-
-java {
-    withSourcesJar()
-}
+version = '0.2.0'
+description = 'One set of regular-expression rules, the same answer in Java, JavaScript, Python, Go, Rust, C# and Ruby.'
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
@@ -33,11 +29,37 @@ test {
     }
 }
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            artifactId = 'regex-parity'
-            from components.java
+mavenPublishing {
+    publishToMavenCentral()
+    // Signing needs the release key, which only the release workflow has; publishing to the local
+    // Maven repository works without it.
+    if (project.hasProperty('signingInMemoryKey')) {
+        signAllPublications()
+    }
+    coordinates('io.github.yauhenbichel', 'regex-parity', version.toString())
+    pom {
+        name = 'regex-parity'
+        description = project.description
+        inceptionYear = '2026'
+        url = 'https://github.com/YauhenBichel/regex-parity'
+        licenses {
+            license {
+                name = 'Apache-2.0'
+                url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+                distribution = 'repo'
+            }
+        }
+        developers {
+            developer {
+                id = 'YauhenBichel'
+                name = 'Yauhen Bichel'
+                url = 'https://github.com/YauhenBichel'
+            }
+        }
+        scm {
+            url = 'https://github.com/YauhenBichel/regex-parity'
+            connection = 'scm:git:git://github.com/YauhenBichel/regex-parity.git'
+            developerConnection = 'scm:git:ssh://git@github.com/YauhenBichel/regex-parity.git'
         }
     }
 }
