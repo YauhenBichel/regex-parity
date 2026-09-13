@@ -1,0 +1,25 @@
+# The example rule from docs/architecture/0001-design.md, section 4.
+id: example-ruleset
+version: "1"
+updated: 2026-09-13
+profile: portable-1
+extension: rules/extension.schema.json
+
+rules:
+  - id: EX001
+    title: A delivery date nobody agreed
+    category: commitments
+    kind: forbid
+    severity: note
+    rationale: >
+      A date in an outgoing message becomes a commitment the moment it is read.
+    patterns:
+      - '\bwill\s+(?:be\s+)?(?:ready|done|shipped)\s+by\s+(?:monday|tuesday|wednesday|thursday|friday|tomorrow)\b'
+    unless:
+      - '\bif\b'
+    fixtures:
+      fail:
+        - "It will be ready by Friday."
+      pass:
+        - "It will be ready by Friday if the review goes well."
+        - "When will it be ready?"

@@ -1,0 +1,8 @@
+# name	pattern	input, with \uXXXX escapes so invisible characters stay visible
+long s	\b(definitely|certainly|clearly|surely)\s+(benign|harmless|normal|fine)\b	That's definitely harmleſs.
+Kelvin sign	\bknow\b	I Know this.
+full-width digits	\b\d{3}[ -]?\d{3}[ -]?\d{4}\b	ref １２３ ４５６ ７８９０
+accented letter by \b	\bcaf\b	the café is open
+accented letter in \w	^\w+$	café
+zero-width space in a word	\bmelanoma\b	mela​noma
+accented letter by \b, again	\bsum\b	résumé

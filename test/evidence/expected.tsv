@@ -1,0 +1,8 @@
+case	js_raw	python_raw	java_raw	js_folded	python_folded	java_folded	java_folded_ascii_b
+long s	no	yes	yes	yes	yes	yes	yes
+Kelvin sign	no	yes	yes	yes	yes	yes	yes
+full-width digits	no	yes	no	yes	yes	yes	yes
+accented letter by \b	yes	no	no	yes	yes	no	yes
+accented letter in \w	no	yes	no	no	no	no	no
+zero-width space in a word	no	no	no	yes	yes	yes	yes
+accented letter by \b, again	yes	no	no	yes	yes	no	yes
