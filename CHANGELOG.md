@@ -11,6 +11,8 @@
 - `--` and `~~` inside a character class are refused, because Rust reads them as set operations.
 - One tag releases every package: `release.yml` checks that all versions match, then publishes to
   npm, PyPI, Maven Central, crates.io, NuGet and RubyGems, and tags the Go module ([docs/RELEASING.md](docs/RELEASING.md)).
+- `scripts/setup-release.sh` walks through each registry's one-time setup and stores what the release
+  workflow needs.
 - `conformance/patterns.tsv`: every language must refuse and accept the same patterns.
 
 ## 0.1.0 (not yet published)
