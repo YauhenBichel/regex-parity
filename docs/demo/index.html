@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>regex-parity demo</title>
+<meta name="description" content="Type a regular expression and some text. See plain JavaScript and plain Python disagree, and regex-parity give the same answer in both.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --ground: #f3f5f2; --surface: #ffffff; --ink: #17201b; --muted: #58635d; --line: #d5dbd6;
+  --accent: #2b55a0; --good: #22703f; --good-bg: #e0f0e5; --bad: #a92c22; --bad-bg: #f6e1dd;
+  --warn: #8a5a00; --warn-bg: #f7ecd5; --code: #ebeeec;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ground: #0f1311; --surface: #161b18; --ink: #e2e8e4; --muted: #98a49d; --line: #2a322d;
+    --accent: #8fb1ee; --good: #7ccb97; --good-bg: #17291d; --bad: #f08e82; --bad-bg: #37201c;
+    --warn: #e7bd6a; --warn-bg: #2f2615; --code: #1d2420;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 16px/1.55 var(--sans); padding-inline: 18px; padding-block: 32px 64px; }
+.wrap { max-width: 1040px; margin: 0 auto; display: grid; gap: 28px; }
+.eyebrow { font: 500 0.78rem var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); line-height: 1.12; margin: 0 0 12px; text-wrap: balance; }
+h2 { font-size: 1.15rem; margin: 0 0 10px; }
+.lede { max-width: 68ch; margin: 0; color: var(--ink); }
+a { color: var(--accent); }
+code, .mono { font-family: var(--mono); }
+.examples { display: flex; flex-wrap: wrap; gap: 8px; }
+.examples button { font: 500 0.85rem var(--sans); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+.examples button:hover, .examples button:focus-visible { border-color: var(--accent); color: var(--accent); outline: none; }
+.inputs { display: grid; gap: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 18px; }
+label { display: grid; gap: 6px; font-weight: 500; font-size: 0.9rem; }
+input[type="text"], textarea { font: 1rem var(--mono); color: var(--ink); background: var(--ground); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; width: 100%; }
+textarea { min-height: 70px; resize: vertical; }
+input:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.check { display: flex; align-items: center; gap: 8px; font-weight: 400; }
+.verdict { display: grid; gap: 8px; }
+.pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 8px; font-weight: 500; }
+.pill.good { background: var(--good-bg); color: var(--good); }
+.pill.bad { background: var(--bad-bg); color: var(--bad); }
+.pill.warn { background: var(--warn-bg); color: var(--warn); }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+.card.parity { border-color: var(--accent); }
+.card h3 { margin: 0; font-size: 0.95rem; }
+.card .flags { font: 0.78rem var(--mono); color: var(--muted); }
+.card .result { font: 500 1.25rem var(--mono); }
+.card .result.yes { color: var(--good); }
+.card .result.no { color: var(--muted); }
+.card .result.err { color: var(--bad); font-size: 0.9rem; }
+.card .found { font: 0.85rem var(--mono); overflow-wrap: anywhere; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; }
+.folded { font: 1rem var(--mono); background: var(--code); border-radius: 6px; padding: 10px 12px; overflow-x: auto; white-space: pre-wrap; overflow-wrap: anywhere; }
+.changes { margin: 10px 0 0; padding-left: 1.2em; font-size: 0.92rem; }
+.changes code { background: var(--code); padding: 0 4px; border-radius: 4px; }
+.mark { background: var(--warn-bg); color: var(--warn); border-radius: 3px; padding: 0 3px; font-size: 0.8em; }
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.steps div { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; }
+.steps b { display: block; margin-bottom: 4px; }
+.status { font-size: 0.85rem; color: var(--muted); }
+footer { font-size: 0.9rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <p class="eyebrow">regex-parity · live demo</p>
+    <h1>One regex, two languages. Do they agree?</h1>
+    <p class="lede">Type a pattern and some text, or pick an example. Plain JavaScript and plain Python run the pattern as it is. regex-parity runs it in both, exactly as it runs in Java. Everything runs in your browser; Python runs through Pyodide.</p>
+  </header>
+
+  <section>
+    <h2>Examples</h2>
+    <div class="examples" id="examples"></div>
+  </section>
+
+  <section class="inputs">
+    <label for="pattern">Pattern
+      <input id="pattern" type="text" spellcheck="false" autocomplete="off">
+    </label>
+    <label for="text">Text
+      <textarea id="text" spellcheck="false"></textarea>
+    </label>
+    <label class="check" for="case"><input id="case" type="checkbox"> Case-sensitive</label>
+  </section>
+
+  <section class="verdict" id="verdict" aria-live="polite"></section>
+
+  <section class="grid">
+    <div class="card"><h3>Plain JavaScript</h3><div class="flags">new RegExp(pattern, "gi")</div><div class="result" id="js-plain"></div><div class="found" id="js-plain-found"></div></div>
+    <div class="card"><h3>Plain Python</h3><div class="flags">re.finditer(pattern, text, re.I | re.UNICODE)</div><div class="result" id="py-plain"></div><div class="found" id="py-plain-found"></div></div>
+    <div class="card parity"><h3>regex-parity · JavaScript</h3><div class="flags">findAll(pattern, text)</div><div class="result" id="js-parity"></div><div class="found" id="js-parity-found"></div></div>
+    <div class="card parity"><h3>regex-parity · Python</h3><div class="flags">find_all(pattern, text)</div><div class="result" id="py-parity"></div><div class="found" id="py-parity-found"></div></div>
+  </section>
+  <p class="status" id="status">Loading Python in your browser (about 10 MB, once)…</p>
+
+  <section class="panel">
+    <h2>What regex-parity matched against</h2>
+    <div class="folded" id="folded"></div>
+    <ul class="changes" id="changes"></ul>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+    <div class="steps">
+      <div><b>1. Fold the text</b>Look-alike characters become one form: long s to s, full-width to ASCII, smart quotes to straight ones, every dash to a hyphen. Invisible characters are removed.</div>
+      <div><b>2. Match the same way</b>ASCII behaviour for \b, \w, \d, \s and case, in every engine. Patterns that engines read differently, such as lookbehind or $, are refused with a reason.</div>
+      <div><b>3. Point at the original</b>Every match is mapped back, so its position and text are what the user actually wrote.</div>
+    </div>
+  </section>
+
+  <footer>
+    Java gives the same answers as regex-parity above; it cannot run in a browser, but its test suite checks the same shared cases.
+    Code, specification and tests: <a href="https://github.com/YauhenBichel/regex-parity">github.com/YauhenBichel/regex-parity</a>.
+  </footer>
+</main>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v314.0.6/full/pyodide.js"></script>
+<script type="module">
+const load = async (candidates) => {
+  for (const candidate of candidates) {
+    try { return await import(candidate); } catch { /* try the next location */ }
+  }
+  throw new Error("regex-parity.js not found");
+};
+const rp = await load(["./regex-parity.js", "../../packages/js/src/index.js"]);
+
+const cp = (...codePoints) => String.fromCodePoint(...codePoints);
+const EXAMPLES = [
+  { label: "Long s", pattern: String.raw`\bharmless\b`, text: `It's definitely harmle${cp(0x017f)}s.` },
+  { label: "Kelvin sign", pattern: String.raw`\bknow\b`, text: `I ${cp(0x212a)}now this.` },
+  { label: "Full-width digits", pattern: String.raw`\border\s+#?\d{6}\b`, text: `order #${cp(0xff11, 0xff12, 0xff13, 0xff14, 0xff15, 0xff16)}` },
+  { label: "Zero-width space", pattern: String.raw`\bmelanoma\b`, text: `this is a mela${cp(0x200b)}noma` },
+  { label: "Smart apostrophe", pattern: String.raw`\bit's\s+safe\b`, text: `It${cp(0x2019)}s safe to ignore.` },
+  { label: "Accented letter", pattern: String.raw`\bcaf\b`, text: `the caf${cp(0x00e9)} is open` },
+  { label: "Not portable", pattern: String.raw`(?<!not )harmless`, text: "harmless" },
+];
+
+const INVISIBLE = new Set([0x00ad, 0x180e, 0x200b, 0x200c, 0x200d, 0x200e, 0x200f, 0x202a, 0x202b, 0x202c, 0x202d, 0x202e, 0x2060, 0x2061, 0x2062, 0x2063, 0x2064, 0xfeff]);
+const hex = (c) => "U+" + c.toString(16).toUpperCase().padStart(4, "0");
+const html = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+// Invisible characters are shown as a marker, so a match that contains one can be seen.
+const visible = (s) => [...s].map((c) => (INVISIBLE.has(c.codePointAt(0)) ? `<span class="mark">${hex(c.codePointAt(0))}</span>` : html(c))).join("");
+
+const $ = (id) => document.getElementById(id);
+const patternInput = $("pattern");
+const textInput = $("text");
+const caseInput = $("case");
+
+for (const example of EXAMPLES) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.textContent = example.label;
+  button.addEventListener("click", () => {
+    patternInput.value = example.pattern;
+    textInput.value = example.text;
+    update();
+  });
+  $("examples").append(button);
+}
+
+let python = null;
+const PY_HELPERS = [
+  "import json, re, regex_parity",
+  "def run(pattern, text, case_sensitive):",
+  "    out = {}",
+  "    try:",
+  "        flags = re.UNICODE if case_sensitive else re.IGNORECASE | re.UNICODE",
+  "        out['plain'] = {'ok': True, 'found': [m.group(0) for m in re.finditer(pattern, text, flags) if m.group(0)]}",
+  "    except re.error as error:",
+  "        out['plain'] = {'ok': False, 'error': str(error)}",
+  "    try:",
+  "        out['parity'] = {'ok': True, 'found': [m.text for m in regex_parity.find_all(pattern, text, case_sensitive)]}",
+  "    except regex_parity.PatternError as error:",
+  "        out['parity'] = {'ok': False, 'error': str(error)}",
+  "    return json.dumps(out)",
+].join("\n");
+
+async function startPython() {
+  try {
+    const pyodide = await loadPyodide();
+    let source = null;
+    for (const url of ["./regex_parity.py", "../../packages/python/regex_parity/__init__.py"]) {
+      const response = await fetch(url);
+      if (response.ok) { source = await response.text(); break; }
+    }
+    if (source === null) throw new Error("regex_parity.py not found");
+    pyodide.FS.writeFile("/home/pyodide/regex_parity.py", source);
+    pyodide.runPython(PY_HELPERS);
+    python = pyodide.globals.get("run");
+    $("status").textContent = `Python ${pyodide.runPython("import sys; sys.version.split()[0]")} is running in your browser.`;
+    update();
+  } catch (error) {
+    $("status").textContent = `Python could not start here (${error.message}). The JavaScript results still work.`;
+  }
+}
+
+function jsPlain(pattern, text, caseSensitive) {
+  try {
+    return { ok: true, found: [...text.matchAll(new RegExp(pattern, caseSensitive ? "g" : "gi"))].map((m) => m[0]).filter(Boolean) };
+  } catch (error) {
+    return { ok: false, error: error.message };
+  }
+}
+
+function jsParity(pattern, text, caseSensitive) {
+  try {
+    return { ok: true, found: rp.findAll(pattern, text, { caseSensitive }).map((m) => m.text) };
+  } catch (error) {
+    return { ok: false, error: error.message };
+  }
+}
+
+function show(id, result) {
+  const box = $(id);
+  const found = $(`${id}-found`);
+  if (!result) {
+    box.className = "result no";
+    box.textContent = "loading…";
+    found.textContent = "";
+    return;
+  }
+  if (!result.ok) {
+    box.className = "result err";
+    box.textContent = result.error;
+    found.textContent = "";
+    return;
+  }
+  box.className = `result ${result.found.length ? "yes" : "no"}`;
+  box.textContent = result.found.length ? "match" : "no match";
+  found.innerHTML = result.found.map(visible).join("<br>");
+}
+
+const same = (a, b) => a && b && a.ok === b.ok && (!a.ok || JSON.stringify(a.found) === JSON.stringify(b.found));
+
+function update() {
+  const pattern = patternInput.value;
+  const text = textInput.value;
+  const caseSensitive = caseInput.checked;
+  const plainJs = jsPlain(pattern, text, caseSensitive);
+  const parityJs = jsParity(pattern, text, caseSensitive);
+  let plainPy = null;
+  let parityPy = null;
+  if (python) {
+    const out = JSON.parse(python(pattern, text, caseSensitive));
+    plainPy = out.plain;
+    parityPy = out.parity;
+  }
+  show("js-plain", plainJs);
+  show("py-plain", plainPy);
+  show("js-parity", parityJs);
+  show("py-parity", parityPy);
+
+  const verdict = [];
+  if (!parityJs.ok) {
+    verdict.push(`<span class="pill warn">regex-parity refuses this pattern: engines read it differently.</span>`);
+  } else if (python) {
+    verdict.push(same(plainJs, plainPy)
+      ? `<span class="pill warn">Plain JavaScript and Python agree on this one.</span>`
+      : `<span class="pill bad">Plain JavaScript and Python disagree.</span>`);
+    verdict.push(same(parityJs, parityPy)
+      ? `<span class="pill good">regex-parity gives the same answer in JavaScript and Python, and Java.</span>`
+      : `<span class="pill bad">regex-parity disagrees with itself. Please open an issue with this example.</span>`);
+  }
+  $("verdict").innerHTML = verdict.join("");
+
+  $("folded").innerHTML = visible(rp.fold(text).text) || "&nbsp;";
+  const changes = [];
+  const seen = new Set();
+  for (const character of text) {
+    const code = character.codePointAt(0);
+    const folded = rp.fold(character).text;
+    if (folded === character || seen.has(code)) continue;
+    seen.add(code);
+    const from = INVISIBLE.has(code) ? "(invisible)" : `<code>${html(character)}</code>`;
+    const to = folded === "" ? "removed" : `<code>${html(folded).replace(/\n/g, "newline")}</code>`;
+    changes.push(`<li>${hex(code)} ${from} → ${to}</li>`);
+  }
+  $("changes").innerHTML = changes.length ? changes.join("") : "<li>Nothing to fold: the text is already plain.</li>";
+}
+
+patternInput.addEventListener("input", update);
+textInput.addEventListener("input", update);
+caseInput.addEventListener("change", update);
+
+patternInput.value = EXAMPLES[0].pattern;
+textInput.value = EXAMPLES[0].text;
+update();
+startPython();
+</script>
+</body>
+</html>

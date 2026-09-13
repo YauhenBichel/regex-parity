@@ -14,7 +14,11 @@ at this stage.
 
 ```bash
 npm ci
-npm run evidence        # Node 20+, Python 3.10+, Java 17+; a few seconds, no network
+npm test                                   # JavaScript
+npm run cases && git diff -- conformance   # conformance files still current
+(cd packages/python && python3 -m unittest discover -s tests -t .)
+(cd packages/java && gradle test)
+npm run evidence                           # Node 20+, Python 3.10+, Java 17+
 ```
 
 `expected.tsv` records what each engine answers. Change it only together with the case that

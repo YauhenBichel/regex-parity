@@ -1,0 +1,116 @@
+# The rules every regex-parity package is tested against.
+#
+#   node packages/js/src/cli.js cases conformance/rules.yaml conformance
+#
+# turns them, with every example's look-alike variants, into rules.tsv and cases.tsv. The
+# JavaScript, Python and Java test suites read those two files and must give exactly the recorded
+# answers and positions. CI regenerates them and fails if they changed.
+rules:
+  - id: C01-words
+    title: A phrase, through look-alike letters and invisible characters
+    patterns:
+      - '\bdefinitely\s+harmless\b'
+    examples:
+      match:
+        - "That is definitely harmless."
+        - "DEFINITELY   harmless, they said"
+      no_match:
+        - "It is not harmless, definitely."
+        - "definitelyharmless"
+
+  - id: C02-digits
+    title: Digits, including full-width ones
+    patterns:
+      - '\border\s+#?\d{6}\b'
+    examples:
+      match:
+        - "Your order #123456 has shipped."
+      no_match:
+        - "Your order 12345 has shipped."
+        - "Your order 1234567 has shipped."
+
+  - id: C03-apostrophes
+    title: A contraction typed with a smart apostrophe
+    patterns:
+      - '\b(?:it|that)''s\s+safe\s+to\s+ignore\b'
+    examples:
+      match:
+        - "It's safe to ignore the warning."
+      no_match:
+        - "It is never safe to ignore it."
+
+  - id: C04-unless
+    title: An exception that only counts inside the same sentence
+    patterns:
+      - '\bready\s+by\s+(?:monday|friday|tomorrow)\b'
+    unless:
+      - '\bif\b'
+    examples:
+      match:
+        - "It will be ready by Friday. If you ask me, that is late."
+      no_match:
+        - "It will be ready by Friday if the review goes well."
+
+  - id: C05-case
+    title: A case-sensitive marker
+    case: sensitive
+    patterns:
+      - '\bTODO\b'
+    examples:
+      match:
+        - "TODO: fix this."
+      no_match:
+        - "A todo list is fine."
+
+  - id: C06-line-breaks
+    title: A dot never crosses a line break, whichever line break it is
+    patterns:
+      - '\bred.blue\b'
+    examples:
+      match:
+        - "red-blue"
+        - "red blue"
+      no_match:
+        - "red\rblue"
+        - "red\Nblue"
+        - "red\Lblue"
+
+  - id: C07-accents
+    title: An accented letter is not a word character
+    patterns:
+      - '\bcaf\b'
+    examples:
+      match:
+        - "the café is open"
+      no_match:
+        - "the cafeteria is open"
+
+  - id: C08-dotless-i
+    title: A dotless i is not an i
+    patterns:
+      - '\bthis\b'
+    examples:
+      match:
+        - "is this it"
+      no_match:
+        - "is thıs it"
+
+  - id: C09-hyphens
+    title: Any dash counts as a hyphen
+    patterns:
+      - '\be-mail\b'
+    examples:
+      match:
+        - "send an e-mail"
+      no_match:
+        - "send an email"
+
+  - id: C10-spaces
+    title: Any space counts as a space
+    patterns:
+      - '\bno\s+reply\b'
+    examples:
+      match:
+        - "no reply yet"
+      no_match:
+        - "noreply@example.org"

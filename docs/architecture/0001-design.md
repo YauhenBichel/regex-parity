@@ -1,6 +1,9 @@
 # 0001: regex-parity design
 
-Status: accepted as the starting design, 13 September 2026. No library code exists yet.
+Status: accepted, 13 September 2026. Version 0.1 builds the runtime half: the same folding, pattern
+checks and rule evaluation as small libraries in JavaScript, Python and Java (see [SPEC.md](../SPEC.md)),
+a command that checks rule files, and conformance cases all three pass. Code generation (sections 5
+and 8) is not built yet; products call the libraries instead.
 
 In short: the same regular expression gives different answers in JavaScript, Python and Java as
 soon as text is not plain ASCII, and tests rarely notice, because test examples are ASCII.

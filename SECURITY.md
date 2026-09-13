@@ -11,6 +11,6 @@ that a rule means the same thing everywhere it runs.
 
 ## What is in this repository today
 
-- A design document and the scripts that re-measure its evidence. They read `test/evidence/`,
-  print results and send nothing anywhere.
-- No library code yet, and nothing published to a package registry.
+- The libraries read the text and patterns you give them and send nothing anywhere. The demo page
+  loads Pyodide from jsDelivr to run Python in your browser.
+- Libraries in `packages/` and a demo page. Nothing is published to a package registry yet.
