@@ -26,8 +26,8 @@ Code points are written U+XXXX.
 
 Every unit written records the start and end of the original code point it came from. Each
 language reports offsets in its own string indexes: UTF-16 code units in JavaScript and Java, code
-points in Python, bytes in Go. The conformance files count characters, which for text below U+10000
-is the same as UTF-16 code units; the Go tests convert.
+points in Python and Ruby, bytes in Go and Rust. The conformance files count characters, which for text below U+10000
+is the same as UTF-16 code units; the Go and Rust tests convert.
 
 A range `[s, e)` of folded text maps back to `[start of unit s, end of unit e-1]`. An empty range
 maps to the start of unit `s`, or to the length of the original when `s` is the end.
@@ -63,6 +63,9 @@ ASCII semantics for `\b \B \w \W \d \D \s \S` and for case:
 | JavaScript | flags `g` plus `i`; never `u` |
 | Python `re` | `re.ASCII`, plus `re.IGNORECASE` |
 | Go `regexp` | `(?i)` prefix unless case-sensitive; `\b \w \d \s` are already ASCII, and after folding its case folding is too |
+| Rust `regex` | `(?i)` prefix unless case-sensitive; `\d \w \s` and their negations rewritten as ASCII classes, `\b` and `\B` as `(?-u:\b)` and `(?-u:\B)`, because the crate's own are Unicode-aware |
+| .NET `System.Text.RegularExpressions` | `RegexOptions.ECMAScript`, plus `IgnoreCase`; built under the invariant culture, because case-insensitive matching uses the culture current at construction |
+| Ruby (Onigmo) | no `i` option: every ASCII letter is written with its other case (`a` as `[aA]`, `[a-f]` as `[a-fA-F]`), because Onigmo's own case folding matches `ß` against `ss`; `\b` and `\B` rewritten as in Java; `^` as `\A`, because Ruby's `^` matches after every newline; matches are searched from a position with `match(text, pos)` |
 | Java `java.util.regex` | `CASE_INSENSITIVE` without `UNICODE_CASE`; `\b` and `\B` rewritten to `(?:(?<=W)(?!W)\|(?<!W)(?=W))` and `(?:(?<=W)(?=W)\|(?<!W)(?!W))` with `W` = `[A-Za-z0-9_]`, because Java's own `\b` treats letters such as `é` as word characters |
 
 Matches are the engine's non-overlapping matches in order. **Empty matches are ignored**, because

@@ -7,3 +7,7 @@ build/
 *.egg-info/
 dist/
 _site/
+target/
+bin/
+obj/
+*.gem

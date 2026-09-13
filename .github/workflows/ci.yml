@@ -74,3 +74,43 @@ jobs:
           test -z "$(gofmt -l .)" || { gofmt -l .; exit 1; }
           go vet ./...
           go test ./...
+
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with: { persist-credentials: false }
+      - run: rustup toolchain install stable --profile minimal --component rustfmt,clippy && rustup default stable
+      - working-directory: packages/rust
+        run: |
+          cargo fmt --check
+          cargo clippy --all-targets -- -D warnings
+          cargo test
+
+  dotnet:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with: { dotnet-version: "8.0.x" }
+      - working-directory: packages/dotnet
+        run: |
+          dotnet test tests/RegexParity.Tests
+          dotnet pack src/RegexParity --output /tmp/nupkg
+
+  ruby:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby: ["3.1", "3.3", "3.4"]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with: { persist-credentials: false }
+      - uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        with: { ruby-version: "${{ matrix.ruby }}" }
+      - working-directory: packages/ruby
+        run: |
+          gem install minitest --no-document
+          ruby -Ilib -Itest test/test_regex_parity.rb
+          gem build regex-parity.gemspec
