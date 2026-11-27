@@ -2,7 +2,7 @@
   "name": "regex-parity",
   "version": "0.2.0",
   "description": "One set of regular-expression rules, the same answer in JavaScript, Python and Java, even on text with accents, look-alike or invisible characters.",
-  "keywords": ["regex", "unicode", "normalization", "nfkc", "cross-language", "guardrails", "content-moderation", "pii"],
+  "keywords": ["regex", "unicode", "normalization", "nfkc", "cross-language", "guardrails", "content-moderation", "pii", "regular-expressions", "unicode-homoglyphs", "zero-width-characters", "python", "java"],
   "license": "Apache-2.0",
   "type": "module",
   "exports": {
@@ -31,5 +31,6 @@
     "url": "git+https://github.com/YauhenBichel/regex-parity.git",
     "directory": "packages/js"
   },
-  "homepage": "https://github.com/YauhenBichel/regex-parity#readme"
+  "homepage": "https://yauhenbichel.github.io/regex-parity/",
+  "bugs": "https://github.com/YauhenBichel/regex-parity/issues"
 }

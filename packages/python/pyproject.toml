@@ -9,7 +9,7 @@ description = "One set of regular-expression rules, the same answer in Python, J
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "Apache-2.0" }
-keywords = ["regex", "unicode", "normalization", "nfkc", "cross-language", "guardrails", "content-moderation", "pii"]
+keywords = ["regex", "unicode", "normalization", "nfkc", "cross-language", "guardrails", "content-moderation", "pii", "regular-expressions", "unicode-homoglyphs", "zero-width-characters", "javascript", "java"]
 classifiers = [
   "Programming Language :: Python :: 3",
   "License :: OSI Approved :: Apache Software License",
@@ -19,6 +19,10 @@ dependencies = []
 
 [project.urls]
 Homepage = "https://github.com/YauhenBichel/regex-parity"
+Documentation = "https://yauhenbichel.github.io/regex-parity/"
+Source = "https://github.com/YauhenBichel/regex-parity"
+Issues = "https://github.com/YauhenBichel/regex-parity/issues"
+Changelog = "https://github.com/YauhenBichel/regex-parity/blob/main/CHANGELOG.md"
 
 [tool.hatch.build.targets.wheel]
 packages = ["regex_parity"]
